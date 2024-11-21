@@ -93,6 +93,7 @@ optionSelect.addEventListener("change", () => {
 });
 
 const generateWordButton = document.getElementById("generate-word");
+const generateWordButtonTable = document.getElementById("generate-table");
 const {
   Document,
   AlignmentType,
@@ -114,7 +115,170 @@ const {
   VerticalAlign,
   WidthType,
 } = window.docx;
+
 generateWordButton.addEventListener("click", function () {
+  const children = [
+    new Paragraph({
+      alignment: "center",
+      children: [new TextRun({ text: "REGISTRO FOTOGRAFICO", bold: true, size: 22 })],
+      heading: HeadingLevel.TITLE,
+      spacing: { before: 500, after: 600 },
+    }),
+  ];
+  if (selectedImages.length === 0) {
+    alert("Por favor, selecciona al menos una imagen.");
+    return;
+  }
+  
+  children.push(new Paragraph({ spacing: { after: 50 } }));
+  for (let i = 0; i < selectedImages.length; i++) {
+    children.push(
+      gettable(
+        selectedImages[i].url,
+        selectedImages[i].name,
+        "Descripcion de la imagen"
+      )
+    );
+    if (i < selectedImages.length - 1) {
+      children.push(new Paragraph({ spacing: { after: 200 } }));
+    }
+  }
+  const doc = new Document({
+    styles: {
+      default: {
+        heading1: {
+          run: {
+            size: "11pt",
+            bold: true,
+          },
+          paragraph: {
+            spacing: {
+              after: 60,
+            },
+          },
+        },
+        heading2: {
+          run: {
+            bold: true,
+          },
+          paragraph: {
+            spacing: {
+              before: 120,
+              after: 60,
+            },
+          },
+        },
+        document: {
+          run: {
+            size: "11pt",
+            font: "Calibri",
+          },
+        },
+      },
+      paragraphStyles: [
+        {
+          id: "tabulated",
+          name: "Tabulated Text",
+          basedOn: "Normal",
+          next: "Normal",
+          quickFormat: true,
+          paragraph: {
+            indent: { left: 360 },
+            spacing: { after: 200 },
+          },
+        },
+        {
+          id: "table_header",
+          name: "table_header",
+          basedOn: "Normal",
+          next: "Normal",
+          run: {
+            size: "9pt",
+            bold: true,
+          },
+        },
+        {
+          id: "table_text",
+          name: "table_text",
+          basedOn: "Normal",
+          next: "Normal",
+          run: {
+            size: "9pt",
+          },
+        },
+        {
+          id: "wellSpaced",
+          name: "Well Spaced",
+          basedOn: "Normal",
+          quickFormat: true,
+          paragraph: {
+            spacing: {
+              line: 276,
+              before: 20 * 72 * 0.1,
+              after: 20 * 72 * 0.05,
+            },
+          },
+        },
+        {
+          id: "strikeUnderline",
+          name: "Strike Underline",
+          basedOn: "Normal",
+          quickFormat: true,
+          run: {
+            strike: true,
+            underline: {
+              type: UnderlineType.SINGLE,
+            },
+          },
+        },
+      ],
+    },
+    numbering: {
+      config: [
+        {
+          reference: "numbering",
+          levels: [
+            {
+              level: 0,
+              format: LevelFormat.DECIMAL,
+              text: "%1.",
+              alignment: "left",
+              style: {
+                paragraph: {
+                  indent: { left: 200, hanging: 200 },
+                  spacing: { after: 200 },
+                },
+              },
+            },
+            {
+              level: 1,
+              format: LevelFormat.DECIMAL,
+              text: "%1.%2.",
+              alignment: "left",
+              style: {
+                paragraph: {
+                  indent: { left: 400, hanging: 100 },
+                  spacing: { after: 50 },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+    sections: [{ children }],
+  });
+
+  Packer.toBlob(doc)
+    .then((blob) => {
+      saveAs(blob, "registro-fotografico.docx");
+    })
+    .catch((error) => {
+      console.error("Error al generar el documento:", error);
+    });
+});
+
+generateWordButtonTable.addEventListener("click", function () {
   const currentDate = new Date();
   const formattedDate = `${currentDate.toLocaleDateString("es-ES", {
     year: "numeric",
@@ -335,30 +499,6 @@ generateWordButton.addEventListener("click", function () {
       style: "tabulated",
     })
   );
-  if (selectedImages.length === 0) {
-    alert("Por favor, selecciona al menos una imagen.");
-    return;
-  }
-  children.push(new Paragraph({ spacing: { after: 50 } }));
-  children.push(
-    new Paragraph({
-      alignment: "center",
-      children: [new TextRun({ text: "REGISTRO FOTOGRAFICO", bold: true })],
-    })
-  );
-  children.push(new Paragraph({ spacing: { after: 50 } }));
-  for (let i = 0; i < selectedImages.length; i++) {
-    children.push(
-      gettable(
-        selectedImages[i].url,
-        selectedImages[i].name,
-        "Descripcion de la imagen"
-      )
-    );
-    if (i < selectedImages.length - 1) {
-      children.push(new Paragraph({ spacing: { after: 200 } }));
-    }
-  }
   const doc = new Document({
     styles: {
       default: {
@@ -487,7 +627,7 @@ generateWordButton.addEventListener("click", function () {
 
   Packer.toBlob(doc)
     .then((blob) => {
-      saveAs(blob, "informe.docx");
+      saveAs(blob, "informe-obervaciones.docx");
     })
     .catch((error) => {
       console.error("Error al generar el documento:", error);
@@ -629,7 +769,7 @@ function createTableWithHeaders(Opciones) {
   }
 
   return new Table({
-    alignment: Alignment.CENTER,
+    alignment: "center",
     rows: rows,
     width: {
       size: 100,

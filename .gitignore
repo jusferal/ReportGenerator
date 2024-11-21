@@ -1,3 +1,7 @@
 imagenes/
 .vscode/
 .docx
+node_modules/
+main.js
+package-lock.json
+package.json
