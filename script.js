@@ -1,10 +1,10 @@
 const imageUpload = document.getElementById("image-upload");
 const previewContainer = document.getElementById("image-preview");
 
-let selectedImages = []; 
+let selectedImages = [];
 imageUpload.addEventListener("change", function (event) {
-  previewContainer.innerHTML = ""; 
-  selectedImages = []; 
+  previewContainer.innerHTML = "";
+  selectedImages = [];
 
   const files = Array.from(event.target.files);
 
@@ -26,7 +26,6 @@ imageUpload.addEventListener("change", function (event) {
       removeButton.onclick = () => {
         selectedImages = selectedImages.filter((_, i) => i !== index);
         imageContainer.remove();
-        console.log("Imágenes actuales:", selectedImages);
       };
 
       imageContainer.appendChild(img);
@@ -38,10 +37,9 @@ imageUpload.addEventListener("change", function (event) {
         file: file,
         url: e.target.result,
       });
-
     };
 
-    reader.readAsDataURL(file); // Convertir imagen a DataURL para previsualización
+    reader.readAsDataURL(file);
   });
 });
 
@@ -52,70 +50,49 @@ let optionDescriptions = {};
 let optionsData = [];
 
 optionSelect.addEventListener("change", () => {
-    // Obtener el contenido del option seleccionado
-    const selectedOptionText =
-      optionSelect.options[optionSelect.selectedIndex]?.textContent;
-  
-    // Limpiar la columna de descripción
-    descriptionColumn.innerHTML = "";
-  
-    // Verificar si se seleccionó una opción válida
-    if (optionSelect.value) {
-      // Buscar si la opción ya está en el arreglo
-      let option = optionsData.find((opt) => opt.name === selectedOptionText);
-  
-      // Si no existe, inicializarla
-      if (!option) {
-        option = { name: selectedOptionText, description: "" };
-        optionsData.push(option);
-      }
-  
-      // Crear el editor de descripción
-      const label = document.createElement("label");
-      label.textContent = `Descripción:`;
-  
-      const textarea = document.createElement("textarea");
-      textarea.rows = 5;
-      textarea.value = option.description;
-      textarea.addEventListener("input", (e) => {
-        option.description = e.target.value;
-      });
-  
-      const deleteButton = document.createElement("button");
-      deleteButton.type = "button";
-      deleteButton.textContent = "Eliminar";
-      deleteButton.className = "generate-button";
-      deleteButton.addEventListener("click", () => {
-        // Eliminar la opción del arreglo
-        optionsData = optionsData.filter(
-          (opt) => opt.name !== selectedOptionText
-        );
-        optionSelect.value = ""; // Reiniciar selección
-        descriptionColumn.innerHTML =
-          "<p class='placeholder'>Seleccione una opción para editar su descripción</p>";
-        console.log("Opciones después de eliminar:", optionsData);
-      });
-  
-      // Añadir elementos al DOM
-      descriptionColumn.appendChild(label);
-      descriptionColumn.appendChild(textarea);
-      descriptionColumn.appendChild(deleteButton);
-    } else {
-      // Mensaje de marcador de posición
+  const selectedOptionText =
+    optionSelect.options[optionSelect.selectedIndex]?.textContent;
+
+  descriptionColumn.innerHTML = "";
+  if (optionSelect.value) {
+    let option = optionsData.find((opt) => opt.name === selectedOptionText);
+    if (!option) {
+      option = { name: selectedOptionText, description: "" };
+      optionsData.push(option);
+    }
+    const label = document.createElement("label");
+    label.textContent = `Descripción:`;
+
+    const textarea = document.createElement("textarea");
+    textarea.rows = 5;
+    textarea.value = option.description;
+    textarea.addEventListener("input", (e) => {
+      option.description = e.target.value;
+    });
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.textContent = "Eliminar";
+    deleteButton.className = "generate-button";
+    deleteButton.addEventListener("click", () => {
+      optionsData = optionsData.filter(
+        (opt) => opt.name !== selectedOptionText
+      );
+      optionSelect.value = "";
       descriptionColumn.innerHTML =
         "<p class='placeholder'>Seleccione una opción para editar su descripción</p>";
-    }
-  
-    console.log("Opciones actuales:", optionsData);
-  });
-  
+    });
+
+    descriptionColumn.appendChild(label);
+    descriptionColumn.appendChild(textarea);
+    descriptionColumn.appendChild(deleteButton);
+  } else {
+    descriptionColumn.innerHTML =
+      "<p class='placeholder'>Seleccione una opción para editar su descripción</p>";
+  }
+});
 
 const generateWordButton = document.getElementById("generate-word");
-
-// Manejar clic en "Generar Word"
-//const fs = require("fs");
-//const path = require("path");
-//const probe = require('probe-image-size');
 const {
   Document,
   AlignmentType,
@@ -170,36 +147,36 @@ generateWordButton.addEventListener("click", function () {
       spacing: { after: 200 },
     }),
     new Paragraph({
-      tabStops: [{ position: 1000, alignment: "left" }], // Tabulación a 2000 twips
+      tabStops: [{ position: 1000, alignment: "left" }],
       indent: {
-        left: 1500, // Sangría izquierda para alinear con el tab stop
-        hanging: 1500, // Sangría colgante para las líneas siguientes
+        left: 1500,
+        hanging: 1500,
       },
-      spacing: { after: 200 }, // Espaciado después del párrafo
+      spacing: { after: 200 },
       children: [
         new TextRun({ text: "A\t:\tOficina Regional Lima Norte - Osinergmin" }),
       ],
     }),
     new Paragraph({
-      tabStops: [{ position: 1000, alignment: "left" }], // Tabulación a 2000 twips
+      tabStops: [{ position: 1000, alignment: "left" }],
       indent: {
-        left: 1500, // Sangría izquierda para alinear con el tab stop
-        hanging: 1500, // Sangría colgante para las líneas siguientes
+        left: 1500,
+        hanging: 1500,
       },
-      spacing: { after: 200 }, // Espaciado después del párrafo
+      spacing: { after: 200 },
       children: [
         new TextRun({ text: "De\t:\tIng. Paolo Minaya Ccaihuare" }),
         new TextRun({
           text: "CONSORCIO EVALUACIÓN Y SUPERVISIÓN EN ENERGIA EIRL, CALUSS S.A.C., CONSULTORÍA & SERVICIOS EN HIDROCARBUROS Y MINERÍA S.A.C.",
-          break: 1, // Salto de línea para que inicie en la siguiente línea
+          break: 1,
         }),
       ],
     }),
     new Paragraph({
-      tabStops: [{ position: 1000, alignment: "left" }], // Tabulación a 2000 twips
+      tabStops: [{ position: 1000, alignment: "left" }],
       indent: {
-        left: 1500, // Sangría izquierda para alinear con el tab stop
-        hanging: 1500, // Sangría colgante para las líneas siguientes
+        left: 1500,
+        hanging: 1500,
       },
       children: [
         new TextRun({
@@ -301,8 +278,6 @@ generateWordButton.addEventListener("click", function () {
   ];
   children.push(new Paragraph({ spacing: { after: 50 } }));
   if (optionsData.length > 0) {
-    console.log(optionsData);
-    console.log(optionsData.length);
     children.push(createTableWithHeaders(optionsData));
   }
   children.push(new Paragraph({ spacing: { after: 50 } }));
@@ -384,7 +359,6 @@ generateWordButton.addEventListener("click", function () {
       children.push(new Paragraph({ spacing: { after: 200 } }));
     }
   }
-  // Genera el documento Word
   const doc = new Document({
     styles: {
       default: {
@@ -425,8 +399,8 @@ generateWordButton.addEventListener("click", function () {
           next: "Normal",
           quickFormat: true,
           paragraph: {
-            indent: { left: 360 }, // Sangría para tabular el texto
-            spacing: { after: 200 }, // Espaciado entre párrafos
+            indent: { left: 360 },
+            spacing: { after: 200 },
           },
         },
         {
@@ -478,29 +452,29 @@ generateWordButton.addEventListener("click", function () {
     numbering: {
       config: [
         {
-          reference: "numbering", // Identificador para los párrafos
+          reference: "numbering",
           levels: [
             {
               level: 0,
               format: LevelFormat.DECIMAL,
-              text: "%1.", // Numeración principal
+              text: "%1.",
               alignment: "left",
               style: {
                 paragraph: {
-                  indent: { left: 200, hanging: 200 }, // Sangría y espacio reducido
-                  spacing: { after: 200 }, // Espacio después de los párrafos
+                  indent: { left: 200, hanging: 200 },
+                  spacing: { after: 200 },
                 },
               },
             },
             {
               level: 1,
               format: LevelFormat.DECIMAL,
-              text: "%1.%2.", // Subnumeración (e.g., "1.1.")
+              text: "%1.%2.",
               alignment: "left",
               style: {
                 paragraph: {
-                  indent: { left: 400, hanging: 100 }, // Sangría mayor para subniveles
-                  spacing: { after: 50 }, // Espacio después
+                  indent: { left: 400, hanging: 100 },
+                  spacing: { after: 50 },
                 },
               },
             },
@@ -513,9 +487,7 @@ generateWordButton.addEventListener("click", function () {
 
   Packer.toBlob(doc)
     .then((blob) => {
-      // Usa FileSaver.js para guardar el archivo
-      saveAs(blob, "example.docx");
-      console.log("Documento creado exitosamente.");
+      saveAs(blob, "informe.docx");
     })
     .catch((error) => {
       console.error("Error al generar el documento:", error);
@@ -573,17 +545,14 @@ function createEvaluacionTable(index, title, descripcion) {
   const lines = descripcion
     .trim()
     .split("\n")
-    .filter((line) => line.trim() !== ""); // Filtra líneas completamente vacías
-  console.log(lines);
-  // Crea los TextRun para cada línea
+    .filter((line) => line.trim() !== "");
   const textRuns = lines.map(
     (line, i) =>
       new TextRun({
         text: line,
-        break: i == 0 ? 0 : 1, // Salto solo entre líneas
+        break: i == 0 ? 0 : 1,
       })
   );
-  console.log("asdsad" + textRuns.length);
   return new TableRow({
     children: [
       new TableCell({
