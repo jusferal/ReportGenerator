@@ -627,7 +627,7 @@ generateWordButtonTable.addEventListener("click", function () {
 
   Packer.toBlob(doc)
     .then((blob) => {
-      saveAs(blob, "informe-obervaciones.docx");
+      saveAs(blob, "informe-observaciones.docx");
     })
     .catch((error) => {
       console.error("Error al generar el documento:", error);
